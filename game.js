@@ -60,17 +60,30 @@
   var update = function(modifier) {
 
     if (38 in keysDown) {//up
+      if (hero.y < 10) {
+        return;
+      }
       hero.y -= hero.speed * modifier;
     }
     if (40 in keysDown) {//down
+      if (hero.y > canvas.height - 40) {
+        return;
+      }
       hero.y += hero.speed * modifier;
     }
     if (37 in keysDown) {//left
+      if (hero.x < 10) {
+        return;
+      }
       hero.x -= hero.speed * modifier;
     }
     if (39 in keysDown) {//right
+      if (hero.x > canvas.width - 40) {
+        return;
+      }
       hero.x += hero.speed * modifier;
     }
+
 
     // Are they touching?
     if (hero.x <= (monster.x + 32)
