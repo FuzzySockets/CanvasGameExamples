@@ -60,28 +60,24 @@
   var update = function(modifier) {
 
     if (38 in keysDown) {//up
-      if (hero.y < 10) {
-        return;
+      if (hero.y > 10) {
+        hero.y -= hero.speed * modifier;
       }
-      hero.y -= hero.speed * modifier;
     }
     if (40 in keysDown) {//down
-      if (hero.y > canvas.height - 40) {
-        return;
+      if (hero.y < canvas.height - 40) {
+        hero.y += hero.speed * modifier;
       }
-      hero.y += hero.speed * modifier;
     }
     if (37 in keysDown) {//left
-      if (hero.x < 10) {
-        return;
+      if (hero.x > 10) {
+        hero.x -= hero.speed * modifier;
       }
-      hero.x -= hero.speed * modifier;
     }
     if (39 in keysDown) {//right
-      if (hero.x > canvas.width - 40) {
-        return;
+      if (hero.x < canvas.width - 40) {
+        hero.x += hero.speed * modifier;
       }
-      hero.x += hero.speed * modifier;
     }
 
 
