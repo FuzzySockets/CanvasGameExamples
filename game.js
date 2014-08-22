@@ -34,9 +34,9 @@
   };
 
   var loadImages = function() {
-    loadImage(bgImage, 'background.png');
-    loadImage(heroImage, 'hero.png');
-    loadImage(monsterImage, 'monster.png');
+    loadImage(bgImage, 'images/background.png');
+    loadImage(heroImage, 'images/hero.png');
+    loadImage(monsterImage, 'images/monster.png');
   };
 
   var setupKeyboardListeners = function() {
