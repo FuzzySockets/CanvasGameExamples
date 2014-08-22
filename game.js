@@ -4,10 +4,7 @@
       keysDown = {},
       bgImage = new Image(),
       heroImage = new Image(),
-      monsterImage = new Image(),
-      bgReady = false,
-      heroReady = false,
-      monsterReady = false;
+      monsterImage = new Image();
 
   var hero = {
     monstersCaught: 0,
@@ -29,22 +26,17 @@
     document.body.appendChild(canvas);
   };
 
-  var includeImages = function() {
+  var loadImage = function(image, source) {
+    image.onload = function() {
+      image.isReady = true;
+    }
+    image.src = source;
+  };
 
-    bgImage.onload = function () {
-      bgReady = true;
-    };
-    bgImage.src = 'background.png';
-
-    heroImage.onload = function () {
-      heroReady = true;
-    };
-    heroImage.src = 'hero.png';
-
-    monsterImage.onload = function () {
-      monsterReady = true;
-    };
-    monsterImage.src = 'monster.png';
+  var loadImages = function() {
+    loadImage(bgImage, 'background.png');
+    loadImage(heroImage, 'hero.png');
+    loadImage(monsterImage, 'monster.png');
   };
 
   var setupKeyboardListeners = function() {
@@ -81,25 +73,24 @@
     }
 
     // Are they touching?
-    if (
-      hero.x <= (monster.x + 32)
+    if (hero.x <= (monster.x + 32)
       && monster.x <= (hero.x + 32)
       && hero.y <= (monster.y + 32)
       && monster.y <= (hero.y + 32)
     ) {
-      ++hero.monstersCaught;
+      hero.monstersCaught++;
       reset();
     }
   };
 
   var render = function() {
-    if (bgReady) {
+    if (bgImage.isReady) {
       context.drawImage(bgImage, 0, 0);
     }
-    if (heroReady) {
+    if (heroImage.isReady) {
       context.drawImage(heroImage, hero.x, hero.y);
     }
-    if (monsterReady) {
+    if (monsterImage.isReady) {
       context.drawImage(monsterImage, monster.x, monster.y);
     }
 
@@ -124,7 +115,7 @@
   var then = Date.now();
 
   initializeCanvas();
-  includeImages();
+  loadImages();
   setupKeyboardListeners();
   reset();
   main();
