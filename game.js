@@ -80,7 +80,6 @@
       }
     }
 
-
     // Are they touching?
     if (hero.x <= (monster.x + 32)
       && monster.x <= (hero.x + 32)
