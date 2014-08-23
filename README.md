@@ -1,1 +1,1 @@
-# Goblin Catcher #
+# A collection of HTML5 canvas game examples #

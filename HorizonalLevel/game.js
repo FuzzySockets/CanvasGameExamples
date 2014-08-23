@@ -59,7 +59,7 @@
   };
 
   var loadImages = function() {
-    loadImage(bgImage, 'images/background2.png');
+    loadImage(bgImage, 'images/background.png');
     loadImage(heroImage, 'images/hero.png');
     loadImage(coinImage, 'images/coin.png');
     //loadImage(monsterImage, 'images/monster.png');
