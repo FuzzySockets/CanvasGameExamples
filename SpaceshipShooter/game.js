@@ -115,7 +115,6 @@
   // Automatic movement handling
   //
   var automaticMovement = {
-    moveInProgress: false,
     direction: 'right',
     move: function (modifier) {
 
