@@ -14,7 +14,7 @@
   //
   var Ship = function (image, speed, strength) {
     if (image instanceof GameImage === false) {
-      throw TypeError('image must be an instance of GameImage')
+      throw TypeError('image must be an instance of GameImage');
     }
     this.image = image;
     this.strength = strength || 10;
