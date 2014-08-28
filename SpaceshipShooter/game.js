@@ -1,10 +1,14 @@
 (function() {
 
+  //TODO: Refactor into seperate js files
+
   var CANVAS_WIDTH = 1024,
       CANVAS_HEIGHT = 480,
-      ENEMY_COUNT = 9;
+      ENEMY_COUNT = 9,
+      GAME_IMAGE_TYPE_ERROR = 'image must be an instance of GameImage';
 
   var canvas, context, bgImage, shipImage, heroShip,
+      missles = [],
       enemyVessels = [],
       keysDown = {},
       then = Date.now();
@@ -14,7 +18,7 @@
   //
   var Ship = function (image, speed, strength) {
     if (image instanceof GameImage === false) {
-      throw TypeError('image must be an instance of GameImage');
+      throw TypeError(GAME_IMAGE_TYPE_ERROR);
     }
     this.image = image;
     this.strength = strength || 10;
@@ -27,6 +31,45 @@
 
   Ship.prototype.moveRight = function (modifiedSpeed) {
     this.image.x += modifiedSpeed;
+  };
+
+  //Missle
+  //TODO: Refactor with Ship
+  var Missle = function (image, speed, strength) {
+    if (image instanceof GameImage === false) {
+      throw TypeError(GAME_IMAGE_TYPE_ERROR);
+    }
+    this.image = image;
+    this.strength = strength || 10;
+    this.speed = speed || 512;
+  };
+
+  Missle.prototype.moveUp = function (modifiedSpeed) {
+    this.image.y -= modifiedSpeed;
+  };
+
+  Missle.prototype.detectStrike = function (enemyVessels) {
+
+    var me = this;
+
+    enemyVessels.forEach(function (vessel) {
+      if (!me.image || !vessel) {
+        return false;
+      }
+      if (me.image.x <= (vessel.image.x + 65) &&
+          me.image.y <= (vessel.image.y + 65) &&
+          vessel.image.x <= (me.image.x + 20) &&
+          vessel.image.y <= (me.image.y + 65)
+      ) {
+        me.image.y -= 2000;
+        vessel.image.x -= 2000;
+        enemyVessels.splice(enemyVessels.indexOf(vessel), 1);
+        missles.splice(missles.indexOf(me), 1);
+        delete vessel.image;
+        delete me.image;
+        return true;
+      }
+    });
   };
 
   //
@@ -105,7 +148,9 @@
     delegateSingleKeyPress: function (keyCode) {
       if (keyCode === 32) {
         if (enemyVessels.length > 0) {
-          console.log('instantiate a new missle');
+          var missleImage = canvasManager.registerImage(new GameImage('images/rocket.png', heroShip.image.x, heroShip.image.y - 65)),
+              missle = new Missle(missleImage, 768);
+          missles.push(missle);
         }
       }
     }
@@ -113,32 +158,41 @@
 
   //
   // Automatic movement handling
-  //
+  // TODO: Refactor
   var automaticMovement = {
     direction: 'right',
     move: function (modifier) {
 
-      var firstEnemyX = enemyVessels[0].image.x,
-          lastEnemyX = enemyVessels[enemyVessels.length - 1].image.x,
-          me = this;
+      //Refactor into missle class
+      if (enemyVessels.length > 0) {
 
-      if (me.direction === 'right') {
-        enemyVessels.forEach(function (vessel) {
-          vessel.moveRight(vessel.speed * modifier);
-        });
-        if ((lastEnemyX + 65) > CANVAS_WIDTH) {
-          me.direction = 'left';
+        var firstEnemyX = enemyVessels[0].image.x,
+        lastEnemyX = enemyVessels[enemyVessels.length - 1].image.x,
+        me = this;
+
+        if (me.direction === 'right') {
+          enemyVessels.forEach(function (vessel) {
+            vessel.moveRight(vessel.speed * modifier);
+          });
+          if ((lastEnemyX + 65) > CANVAS_WIDTH) {
+            me.direction = 'left';
+          }
         }
+
+        if (me.direction === 'left') {
+          enemyVessels.forEach(function (vessel) {
+            vessel.moveLeft(vessel.speed * modifier);
+          });
+          if (firstEnemyX < 0) {
+            me.direction = 'right';
+          }
+        }
+        ;
       }
 
-      if (me.direction === 'left') {
-        enemyVessels.forEach(function (vessel) {
-          vessel.moveLeft(vessel.speed * modifier);
-        });
-        if (firstEnemyX < 0) {
-          me.direction = 'right';
-        }
-      };
+      missles.forEach(function (missle) {
+        missle.moveUp(missle.speed * modifier);
+      });
     }
   };
 
@@ -152,6 +206,13 @@
       var delta = now - then;
       keyPressDelegator.delegateKeyHolding(delta / 1000);
       automaticMovement.move(delta / 1500);
+
+      missles.forEach(function (missle) {
+        if (missle.detectStrike.call(missle, enemyVessels)) {
+
+        };
+      });
+
       canvasManager.render();
       then = now;
       requestAnimationFrame(mainLoop);
