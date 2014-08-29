@@ -22,15 +22,52 @@
     }
     this.image = image;
     this.strength = strength || 10;
-    this.speed = speed || 512;
+    this.speed = speed || 200;
+    this.velocity = 0;
+    this.intervals = []
   };
 
-  Ship.prototype.moveLeft = function (modifiedSpeed) {
-    this.image.x -= modifiedSpeed;
+  Ship.prototype.moveLeft = function (modifiedSpeed, useAccelleration) {
+
+    var me = this;
+
+    if (me.image.x <= 0) {
+      return;
+    }
+
+    if (useAccelleration) {
+
+      this.intervals.push(setInterval(function () {
+        if (me.velocity < 7) {
+          me.velocity += .05;
+        }
+      }, 40));
+    } else {
+      me.velocity = 1;
+    }
+
+    this.image.x -= modifiedSpeed * this.velocity;
   };
 
-  Ship.prototype.moveRight = function (modifiedSpeed) {
-    this.image.x += modifiedSpeed;
+  Ship.prototype.moveRight = function (modifiedSpeed, useAccelleration) {
+
+    var me = this;
+
+    if (me.image.x >= CANVAS_WIDTH - 65) {
+      return;
+    }
+
+    if (useAccelleration) {
+      this.intervals.push(setInterval(function () {
+        if (me.velocity < 7) {
+          me.velocity += .05;
+        }
+      }, 40));
+    } else {
+      me.velocity = 1;
+    }
+
+    this.image.x += modifiedSpeed * this.velocity;
   };
 
   //Missle
@@ -139,17 +176,17 @@
     delegateKeyHolding: function (modifier) {
       var modifiedSpeed = heroShip.speed * modifier;
       if (37 in keysDown) {
-        heroShip.moveLeft(modifiedSpeed);
+        heroShip.moveLeft(modifiedSpeed, true);
       }
       if (39 in keysDown) {
-        heroShip.moveRight(modifiedSpeed);
+        heroShip.moveRight(modifiedSpeed, true);
       }
     },
     delegateSingleKeyPress: function (keyCode) {
       if (keyCode === 32) {
         if (enemyVessels.length > 0) {
           var missleImage = canvasManager.registerImage(new GameImage('images/rocket.png', heroShip.image.x, heroShip.image.y - 65)),
-              missle = new Missle(missleImage, 768);
+              missle = new Missle(missleImage, 1024);
           missles.push(missle);
         }
       }
@@ -186,8 +223,7 @@
           if (firstEnemyX < 0) {
             me.direction = 'right';
           }
-        }
-        ;
+        };
       }
 
       missles.forEach(function (missle) {
@@ -208,9 +244,7 @@
       automaticMovement.move(delta / 1500);
 
       missles.forEach(function (missle) {
-        if (missle.detectStrike.call(missle, enemyVessels)) {
-
-        };
+        missle.detectStrike.call(missle, enemyVessels);
       });
 
       canvasManager.render();
@@ -238,7 +272,13 @@
       }, false);
 
       addEventListener('keyup', function(e) {
-        delete keysDown[e.keyCode];
+        if (e.keyCode === 37 || e.keyCode === 39) {
+          delete keysDown[e.keyCode];
+          heroShip.velocity = 0;
+          heroShip.intervals.forEach(function (interval) {
+            clearInterval(interval);
+          });
+        }
       }, false);
     },
 
