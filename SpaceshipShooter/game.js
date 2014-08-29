@@ -149,7 +149,7 @@
       if (keyCode === 32) {
         if (enemyVessels.length > 0) {
           var missleImage = canvasManager.registerImage(new GameImage('images/rocket.png', heroShip.image.x, heroShip.image.y - 65)),
-              missle = new Missle(missleImage, 768);
+              missle = new Missle(missleImage, 1280);
           missles.push(missle);
         }
       }
