@@ -26,11 +26,15 @@
   };
 
   Ship.prototype.moveLeft = function (modifiedSpeed) {
-    this.image.x -= modifiedSpeed;
+    if (this.image.x > 0) {
+      this.image.x -= modifiedSpeed;
+    }
   };
 
   Ship.prototype.moveRight = function (modifiedSpeed) {
-    this.image.x += modifiedSpeed;
+    if (this.image.x < CANVAS_WIDTH - 65) {
+      this.image.x += modifiedSpeed;
+    }
   };
 
   //Missle
